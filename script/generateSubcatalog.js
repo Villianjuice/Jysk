@@ -29,4 +29,4 @@ const generateSubcatalog = () => {
     `
     document.body.insertAdjacentHTML('beforeend', subCatalog)
 }
-generateSubcatalog()
+export default generateSubcatalog
