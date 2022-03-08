@@ -1,12 +1,15 @@
 'use strict'
 
+import { getData } from "./getData.js";
+import generateSubcatalog from "./generateSubcatalog.js";
+
 export const catalog = () => {
+    const updateSubCatalog = generateSubcatalog()
+
     const btnBurger = document.querySelector('.btn-burger');
-    const btnClose = document.querySelector('.btn-close');
 
     const catalog = document.querySelector('.catalog');
 
-    const catalogList = document.querySelector('.catalog-list');
     const subCatalog = document.querySelector('.subcatalog') 
     const subcatalogHeader = document.querySelector('.subcatalog-header')
     const btnReturn = document.querySelector('.btn-return ');
@@ -21,17 +24,25 @@ export const catalog = () => {
         overlay.classList.add('active');
     }
     const closeMenu = () => {
+        closeSubMenu()
         catalog.classList.remove('open')
         overlay.classList.remove('active');
-        closeSubMenu()
     }
 
-    const openSubMenu = event => {
+    const handlerCatalog = event => {
         event.preventDefault()
-        const itemList = event.target.closest('.catalog-list__item ')
+        const target = event.target;
+        const itemList = target.closest('.catalog-list__item ')
         if(itemList) {
-            subcatalogHeader.innerHTML = itemList.innerHTML
-            subCatalog.classList.add('subopen')
+            getData.subCatalog(target.textContent, (data) => {
+                updateSubCatalog(target.textContent, data)
+                subCatalog.classList.add('subopen')
+            })
+
+            
+        }
+        if(event.target.closest('.btn-close')) {
+            closeMenu()
         }
     }
 
@@ -40,10 +51,12 @@ export const catalog = () => {
     }
 
     btnBurger.addEventListener('click', openMenu)
-    btnClose.addEventListener('click', closeMenu)
     overlay.addEventListener('click', closeMenu)
-    catalog.addEventListener('click', openSubMenu)
-    btnReturn.addEventListener('click', closeSubMenu)
+    catalog.addEventListener('click', handlerCatalog)
+    subCatalog.addEventListener('click', (event) => {
+        const btnReturn = event.target.closest('.btn-return')
+        if(btnBurger) closeSubMenu();
+    })
 
     document.addEventListener('keydown', event => {
         if(event.code === 'Escape') {
